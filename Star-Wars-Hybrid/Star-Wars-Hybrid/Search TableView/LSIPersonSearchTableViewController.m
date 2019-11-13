@@ -7,10 +7,12 @@
 //
 
 #import "LSIPersonSearchTableViewController.h"
+#import "LSIPerson.h"
+#import "Star_Wars_Hybrid-Swift.h"
 
 @interface LSIPersonSearchTableViewController () <UISearchBarDelegate>
 
-// TODO: Create a PersonController.swift and make it an instance variable
+@property (nonatomic) NSArray<LSIPerson *> *people;
 
 @property (weak, nonatomic) IBOutlet UISearchBar *searchBar;
 
@@ -24,7 +26,7 @@
     
 	// TODO: Implement number of rows
 	
-	return 0;
+	return self.people.count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -32,20 +34,24 @@
 	
 	// TODO: Implement a custom cell named PersonTableViewCell.swift
 	
-	UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"PersonCell" forIndexPath:indexPath];
+	PersonTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"PersonCell" forIndexPath:indexPath];
     
-	// TODO: Set the cell to the current Person object
-	
+    LSIPerson *person = [self.people objectAtIndex:indexPath.row];
+    cell.person = person;
 	
     return cell;
 }
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar {
     
-	
-	// TODO: Search for a person using the searchBar.text
-    
-	// TODO: Save the result and have the UI update itself
+    [LSIPersonController.sharedController searchForPeopleWithSearchTerm:searchBar.text completionHandler:^(NSArray<LSIPerson *> *people, NSError *error) {
+        if (error) {
+            NSLog(@"Error searching for %@: %@", searchBar.text, error);
+        }
+        //no main.queue here because we are doing it when calling fetch method in PersonController
+        self.people = people;
+        [self.tableView reloadData];
+    }];
 }
 
 @end

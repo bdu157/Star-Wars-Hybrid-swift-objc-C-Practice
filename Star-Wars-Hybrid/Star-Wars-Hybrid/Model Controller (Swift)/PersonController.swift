@@ -8,6 +8,7 @@
 
 import Foundation
 
+@objc (LSIPersonController)
 class PersonController: NSObject {
     
     private let baseURL = URL(string: "https://swapi.co/api/people")!
